@@ -70,11 +70,6 @@ void pionRes_cls::Loop()
 	    Double_t mx21, mx22;
 	    mx21 = (mc_Nu+0.93827-mc_pdata_e[k][0]-mc_pdata_e[k][2])*(mc_Nu+0.93827-mc_pdata_e[k][0]-mc_pdata_e[k][2])-(-Pex-mc_pdata_px[k][0]-mc_pdata_px[k][2])*(-Pex-mc_pdata_px[k][0]-mc_pdata_px[k][2])-(-Pey-mc_pdata_py[k][0]-mc_pdata_py[k][2])*(-Pey-mc_pdata_py[k][0]-mc_pdata_py[k][2])-(mc_Nu/mc_y-Pez-mc_pdata_pz[k][0]-mc_pdata_pz[k][2])*(mc_Nu/mc_y-Pez-mc_pdata_pz[k][0]-mc_pdata_pz[k][2]);
 	    mx22 = (mc_Nu+0.93827-mc_pdata_e[k][0]-mc_pdata_e[k][2])*(mc_Nu+0.93827-mc_pdata_e[k][0]-mc_pdata_e[k][2])-(-Pex-mc_pdata_px[k][0]-mc_pdata_px[k][2])*(-Pex-mc_pdata_px[k][0]-mc_pdata_px[k][2])-(-Pey-mc_pdata_py[k][0]-mc_pdata_py[k][2])*(-Pey-mc_pdata_py[k][0]-mc_pdata_py[k][2])-(mc_Nu/mc_y-Pez-mc_pdata_pz[k][0]-mc_pdata_pz[k][2])*(mc_Nu/mc_y-Pez-mc_pdata_pz[k][0]-mc_pdata_pz[k][2]);
-  	    TString hnameM = "hM_mc";
-	    TString hnameMx1 = "hmx21";
-	    TString hnameMx2 = "hmx22";
-	    TString hnamedz = "hdz_mc";
-	    TString hmpi0name = "hmpi0_mc";
 	    TString hname;
 	    TString infix = "";
 	    TString suff = "";
@@ -87,11 +82,12 @@ void pionRes_cls::Loop()
 	      infix += bn.Data();
 	      for (int n=0;n<x.second.size()-1;n++){
 		if (x.second[n] < brv_mc[bn]->EvalInstance(k) && brv_mc[bn]->EvalInstance(k)< x.second[n+1]){
-		  hname = "mc_" + bn + "/" + hnameMx1 + "_" + n;
+		  hname = "mc_" + bn + "/hmx21_" + n;
 		  fillHist(hname,mx21);
-		  hname = "mc_" + bn + "/" + hnameMx2 + "_" + n;
+		  hname = "mc_" + bn + "/hmx22_" + n;
 		  fillHist(hname,mx22);
-
+		  hname = "mc_" + bn + "/hmx2_" + n;
+		  fillHist(hname,mc_Mx2[k]);
 		}
 	      }
 	    }
@@ -109,16 +105,11 @@ void pionRes_cls::Loop()
       //if ( !(FWD(k) && MMCut(k) && rhoCut(k) && CF(k) && minEnergy(k) && piFID_ec(k) && pipFID_dc(k) && pimFID_dc(k) && pi0PID(k) && DZCut(k)) ) continue; // kin limits.
       //if ( !(FWD(k) && CF(k) && minEnergy(k) && piFID_ec(k) && pipFID_dc(k) && pimFID_dc(k) && pi0PID(k)) ) continue; // kin limits.
       //     
-      if ( !(FWD(k)) ) continue; // kin limits.
+      if ( !(FWD(k) && ExclCut(k)) ) continue; // kin limits.
       fillPartHistos(k);
       mx21 = (Nu+0.93827-pdata_e[k][0]-pdata_e[k][2])*(Nu+0.93827-pdata_e[k][0]-pdata_e[k][2])-(-Pex-pdata_px[k][0]-pdata_px[k][2])*(-Pex-pdata_px[k][0]-pdata_px[k][2])-(-Pey-pdata_py[k][0]-pdata_py[k][2])*(-Pey-pdata_py[k][0]-pdata_py[k][2])-(Nu/y-Pez-pdata_pz[k][0]-pdata_pz[k][2])*(Nu/y-Pez-pdata_pz[k][0]-pdata_pz[k][2]);
       mx22 = (Nu+0.93827-pdata_e[k][0]-pdata_e[k][1])*(Nu+0.93827-pdata_e[k][0]-pdata_e[k][1])-(-Pex-pdata_px[k][0]-pdata_px[k][1])*(-Pex-pdata_px[k][0]-pdata_px[k][1])-(-Pey-pdata_py[k][0]-pdata_py[k][1])*(-Pey-pdata_py[k][0]-pdata_py[k][1])-(Nu/y-Pez-pdata_pz[k][0]-pdata_pz[k][1])*(Nu/y-Pez-pdata_pz[k][0]-pdata_pz[k][1]);
 
-      TString hnameM = "hM";
-      TString hnameMx1 = "hmx21";
-      TString hnameMx2 = "hmx22";
-      TString hnamedz = "hdz";
-      TString hmpi0name = "hmpi0";
       TString infix = "";
       TString suff = "";
       TString ttlsuf = "";
@@ -131,10 +122,13 @@ void pionRes_cls::Loop()
 	infix += bn.Data();
 	for (int n=0;n<x.second.size()-1;n++){
 	  if (x.second[n] < brv[bn]->EvalInstance(k) && brv[bn]->EvalInstance(k)< x.second[n+1]){
-	    hname = bn + "/" + hnameMx1 + "_" + n;
+	    hname = bn + "/hmx21_" + n;
 	    fillHist(hname,mx21);
-	    hname = bn + "/" + hnameMx2 + "_" + n;
+	    hname = bn + "/hmx22_" + n;
 	    fillHist(hname,mx22);
+	    hname = bn + "/hmx2_" + n;
+	    fillHist(hname,Mx2[k]);
+
 	  }
 	}
       }
@@ -255,24 +249,29 @@ Bool_t pionRes_cls::MCMother(int k, int pid)
   return (mc_pdata_mpid[k][0]==pid) || (mc_pdata_mpid[k][1]==pid);
 }
 
-
 Bool_t pionRes_cls::FWD(int k)
 {
   bool fwd2 = true;
+  if (options.Contains("PPI"))
+    return ( ((int)det_statPart[k][1]%4000)/2000 >= 1 );
   if (options.Contains("pi0")){
     fwd2 = ( ((int)det_statPart[k][2]%4000)/2000 >= 1 )&&( ((int)det_statPart[k][3]%4000)/2000 >= 1 );
   }
   else{
     fwd2 = ( ((int)det_statPart[k][2]%4000)/2000 >= 1 );
-  }  
+  }
+
+  
   return ( ((int)det_statPart[k][1]%4000)/2000 >= 1 ) && fwd2;
 }
 
 Bool_t pionRes_cls::ExclCut(int k)
 {
+  if (!options.Contains("EXCL"))
+    return kTRUE;
   Double_t Ex;
-  Ex = Nu + 0.93827 - pdata_e[k][1] - pdata_e[k][2];
-
+  Ex = Nu + 0.93827 - pdata_e[k][0] - pdata_e[k][1] - pdata_e[k][2];
+  
   return (-0.003<Mx2[k]&&Mx2[k]<0.002)&&(-0.15<Ex&&Ex<0.19);
 }
 

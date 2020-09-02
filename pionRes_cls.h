@@ -1281,16 +1281,7 @@ void pionRes_cls::Init(TChain *tree,TString binfo)
 
   initKinHistos();
 
-  TString hnameM       = "hM";
-  TString hnameMx1      = "hMx1";
-  TString hnameMx2      = "hMx2";
-  TString hnamedz      = "hdz";
-  TString hmpi0name    = "hmpi0";
-  TString hnameM_mc    = hnameM + "_mc";
-  TString hnameMx1_mc   = hnameMx1 + "_mc";
-  TString hnameMx2_mc   = hnameMx2 + "_mc";
-  TString hnamedz_mc   = hnamedz + "_mc";
-  TString hmpi0name_mc = hmpi0name + "_mc";
+  TString hname;
   
   /* DIR[hnameM]    = ofile->mkdir("M"); */
   /* DIR[hnameMx1]   = ofile->mkdir("Mx1"); */
@@ -1331,16 +1322,23 @@ void pionRes_cls::Init(TChain *tree,TString binfo)
       TString ttlsuf =  Form("%.02f<%s<%.2f",x.second[k], bn.Data(), x.second[k+1]);
       BC[bn].push_back(ttlsuf);
       DIR[bn]->cd();
-      hnameMx1 = TString("hmx21_") + k;
-      new TH1D(hnameMx1,PAIRNAME+": MM^{2}_{1} " + ttlsuf,Nbins,-0.5,0.5);
-      hnameMx2 = TString("hmx22_") + k;
-      new TH1D(hnameMx2,PAIRNAME+": MM^{2}_{2} " + ttlsuf,Nbins,-0.5,0.5);
+      hname = TString("hmx21_") + k;
+      new TH1D(hname,PAIRNAME+": MM^{2}_{1} " + ttlsuf,Nbins,-0.5,0.5);
+      hname = TString("hmx22_") + k;
+      new TH1D(hname,PAIRNAME+": MM^{2}_{2} " + ttlsuf,Nbins,-0.5,0.5);
+      hname = TString("hmx2_") + k;
+      new TH1D(hname,PAIRNAME+": MM^{2} " + ttlsuf,Nbins,-0.5,0.5);
 
+      
       DIR["mc_" + bn]->cd();
-      hnameMx1 = TString("hmx21_") + k;
-      new TH1D(hnameMx1,"MC " + PAIRNAME+": MM^{2}_{1} " + ttlsuf,Nbins,-0.5,0.5);
-      hnameMx2 = TString("hmx22_") + k;
-      new TH1D(hnameMx2,"MC " + PAIRNAME+": MM^{2}_{2} " + ttlsuf,Nbins,-0.5,0.5);   
+      hname = TString("hmx21_") + k;
+      new TH1D(hname,"MC " + PAIRNAME+": MM^{2}_{1} " + ttlsuf,Nbins,-0.5,0.5);
+      hname = TString("hmx22_") + k;
+      new TH1D(hname,"MC " + PAIRNAME+": MM^{2}_{2} " + ttlsuf,Nbins,-0.5,0.5);
+      hname = TString("hmx2_") + k;
+      new TH1D(hname,PAIRNAME+": MM^{2} " + ttlsuf,Nbins,-0.5,0.5);
+
+
     }
   }
 
@@ -1513,15 +1511,15 @@ Int_t pionRes_cls::initKinHistos(){
   h2->GetXaxis()->SetTitle("xF0");
   h2->GetYaxis()->SetTitle("xF1");
 
-  h2 = new TH2D("hthphi_0",Pi0NAME + " : #theta vs #phi",Nbins,0,360,Nbins,0,40);
+  h2 = new TH2D("hthphi_0",Pi0NAME + " : #theta vs #phi",Nbins,-180,180,Nbins,0,40);
   h2->GetXaxis()->SetTitle("#phi");
   h2->GetYaxis()->SetTitle("#theta");
 
-  h2 = new TH2D("hthphi_1",Pi1NAME + " : #theta vs #phi",Nbins,0,360,Nbins,0,40);
+  h2 = new TH2D("hthphi_1",Pi1NAME + " : #theta vs #phi",Nbins,-180,180,Nbins,0,40);
   h2->GetXaxis()->SetTitle("#phi");
   h2->GetYaxis()->SetTitle("#theta");
 
-  h2 = new TH2D("hthphi_h",PAIRNAME + "#theta vs #phi",Nbins,0,360,Nbins,0,40);
+  h2 = new TH2D("hthphi_h",PAIRNAME + "#theta vs #phi",Nbins,-180,180,Nbins,0,40);
   h2->GetXaxis()->SetTitle("#phi");
   h2->GetYaxis()->SetTitle("#theta");
  
@@ -1875,15 +1873,15 @@ Int_t pionRes_cls::initKinHistos(){
     h2->GetXaxis()->SetTitle("xF0");
     h2->GetYaxis()->SetTitle("xF1");
 
-    h2 = new TH2D("hthphi_0","MC " + Pi0NAME + " : #theta vs #phi",Nbins,0,360,Nbins,0,140);
+    h2 = new TH2D("hthphi_0","MC " + Pi0NAME + " : #theta vs #phi",Nbins,-180,180,Nbins,0,140);
     h2->GetXaxis()->SetTitle("#phi");
     h2->GetYaxis()->SetTitle("#theta");
     
-    h2 = new TH2D("hthphi_1","MC " + Pi1NAME + " : #theta vs #phi",Nbins,0,360,Nbins,0,140);
+    h2 = new TH2D("hthphi_1","MC " + Pi1NAME + " : #theta vs #phi",Nbins,-180,180,Nbins,0,140);
     h2->GetXaxis()->SetTitle("#phi");
     h2->GetYaxis()->SetTitle("#theta");
     
-    h2 = new TH2D("hthphi_h","MC " + PAIRNAME + "#theta vs #phi",Nbins,0,360,Nbins,0,140);
+    h2 = new TH2D("hthphi_h","MC " + PAIRNAME + "#theta vs #phi",Nbins,-180,180,Nbins,0,140);
     h2->GetXaxis()->SetTitle("#phi");
     h2->GetYaxis()->SetTitle("#theta");
     
@@ -2080,36 +2078,36 @@ Int_t pionRes_cls::fillPartHistos(int k, Bool_t onMC){
   Double_t p1_x, p2_x, th1_x, th2_x, phi1_x, phi2_x;
   if (onMC){
     double px, py, pz, e;
-    px = -mc_Pex - mc_pdata_px[k][2];
-    py = -mc_Pey - mc_pdata_py[k][2];
-    pz = Eb - mc_Pez - mc_pdata_pz[k][2];
-    e  = Eb + Mp - mc_pdata_pz[k][2];
+    px = -mc_Pex - mc_pdata_px[k][0] - mc_pdata_px[k][2];
+    py = -mc_Pey - mc_pdata_py[k][0] - mc_pdata_py[k][2];
+    pz = Eb - mc_Pez - mc_pdata_pz[k][0] - mc_pdata_pz[k][2];
+    e  = Nu + Mp - mc_pdata_e[k][0] - mc_pdata_e[k][2];
     p1_x = sqrt(px*px + py*py + pz*pz);
     th1_x = TMath::ACos(pz/p1_x)*TMath::RadToDeg();
     phi1_x = TMath::ATan2(py,px)*TMath::RadToDeg();
     
-    px = -mc_Pex - mc_pdata_px[k][1];
-    py = -mc_Pey - mc_pdata_py[k][1];
-    pz = Eb - mc_Pez - mc_pdata_pz[k][1];
-    e  = Eb + Mp - mc_pdata_pz[k][1];
+    px = -mc_Pex - mc_pdata_px[k][0] - mc_pdata_px[k][1];
+    py = -mc_Pey - mc_pdata_py[k][0] - mc_pdata_py[k][1];
+    pz = Eb - mc_Pez - mc_pdata_pz[k][0] - mc_pdata_pz[k][1];
+    e  = Nu + Mp - mc_pdata_e[k][0] - mc_pdata_e[k][1];
     p2_x = sqrt(px*px + py*py + pz*pz);
     th2_x = TMath::ACos(pz/p2_x)*TMath::RadToDeg();
     phi2_x = TMath::ATan2(py,px)*TMath::RadToDeg();
   }
   else {
     double px, py, pz, e;
-    px = -Pex - pdata_px[k][2];
-    py = -Pey - pdata_py[k][2];
-    pz = Eb - Pez - pdata_pz[k][2];
-    e  = Eb + Mp - pdata_pz[k][2];
+    px = -Pex - pdata_px[k][0] - pdata_px[k][2];
+    py = -Pey - pdata_py[k][0] - pdata_py[k][2];
+    pz = Eb - Pez - pdata_pz[k][0] - pdata_pz[k][2];
+    e  = Nu + Mp - pdata_e[k][0] - pdata_e[k][2];
     p1_x = sqrt(px*px + py*py + pz*pz);
     th1_x = TMath::ACos(pz/p1_x)*TMath::RadToDeg();
     phi1_x = TMath::ATan2(py,px)*TMath::RadToDeg();
     
-    px = -Pex - pdata_px[k][1];
-    py = -Pey - pdata_py[k][1];
-    pz = Eb - Pez - pdata_pz[k][1];
-    e  = Eb + Mp - pdata_pz[k][1];
+    px = -Pex - pdata_px[k][0] - pdata_px[k][1];
+    py = -Pey - pdata_py[k][0] - pdata_py[k][1];
+    pz = Eb - Pez - pdata_pz[k][0] - pdata_pz[k][1];
+    e  = Nu + Mp - pdata_e[k][0] - pdata_e[k][1];
     p2_x = sqrt(px*px + py*py + pz*pz);
     th2_x = TMath::ACos(pz/p2_x)*TMath::RadToDeg();
     phi2_x = TMath::ATan2(py,px)*TMath::RadToDeg();
@@ -2183,9 +2181,9 @@ Int_t pionRes_cls::fillPartHistos(int k, Bool_t onMC){
 
     }
   }
-  phi0 = (phi0<0)?phi0+360:phi0;
-  phi1 = (phi1<0)?phi1+360:phi1;
-  phi_h = (phi_h<0)?phi_h+360:phi_h;
+  //phi0 = (phi0<0)?phi0+360:phi0;
+  //phi1 = (phi1<0)?phi1+360:phi1;
+  //phi_h = (phi_h<0)?phi_h+360:phi_h;
   TDirectory *d;
   if (onMC){ 
     d = DIR["kin_mc"];
@@ -2431,14 +2429,14 @@ Int_t pionRes_cls::fillPartHistos(int k, Bool_t onMC){
     d->GetObject("hxz",h2);
     h2->Fill(Z[k],Xb);
 
-    
+    ///// rec vs excl.
     //p1 - p1_X
     d->GetObject("hp1p1X",h2);
-    h2->Fill(p1_x,sqrt(pdata_e[k][1]*pdata_e[k][1] + mpi*mpi));
+    h2->Fill(p1_x,sqrt(pdata_e[k][1]*pdata_e[k][1] - mpi*mpi));
 
     //p2 - p2_X
     d->GetObject("hp2p2X",h2);
-    h2->Fill(p2_x,sqrt(pdata_e[k][2]*pdata_e[k][2] + mpi*mpi));
+    h2->Fill(p2_x,sqrt(pdata_e[k][2]*pdata_e[k][2] - mpi*mpi));
     
     //th1 - th1_X
     d->GetObject("hth1th1X",h2);
@@ -2459,7 +2457,7 @@ Int_t pionRes_cls::fillPartHistos(int k, Bool_t onMC){
     //Diff p1 - p1_X.
     //pdep
     d->GetObject("hdppX1P",h2);
-    h2->Fill(sqrt(pdata_e[k][1]*pdata_e[k][1] + mpi*mpi), p1_x  - sqrt(pdata_e[k][1]*pdata_e[k][1] + mpi*mpi));
+    h2->Fill(sqrt(pdata_e[k][1]*pdata_e[k][1] - mpi*mpi), p1_x  - sqrt(pdata_e[k][1]*pdata_e[k][1] - mpi*mpi));
     d->GetObject("hdppX1th",h2);
     h2->Fill(th1, p1_x  - sqrt(pdata_e[k][1]*pdata_e[k][1] + mpi*mpi));
     d->GetObject("hdppX1phi",h2);
@@ -2468,47 +2466,47 @@ Int_t pionRes_cls::fillPartHistos(int k, Bool_t onMC){
     //Diff th1 - th1_X.
     //pdep
     d->GetObject("hdthX1P",h2);
-    h2->Fill(sqrt(pdata_e[k][1]*pdata_e[k][1] + mpi*mpi), th1_x - th1);
+    h2->Fill(sqrt(pdata_e[k][1]*pdata_e[k][1] - mpi*mpi), th1_x - th1);
     d->GetObject("hdthX1th",h2);
     h2->Fill(th1,  th1_x - th1);
     d->GetObject("hdthX1phi",h2);
     h2->Fill(phi1,  th1_x - th1);
 
-    //Diff th1 - th1_X.
+    //Diff phi1 - phi1_X.
     //pdep
-    d->GetObject("hdthX1P",h2);
-    h2->Fill(sqrt(pdata_e[k][1]*pdata_e[k][1] + mpi*mpi), phi1_x - phi1);
-    d->GetObject("hdthX1th",h2);
+    d->GetObject("hdphiX1P",h2);
+    h2->Fill(sqrt(pdata_e[k][1]*pdata_e[k][1] - mpi*mpi), phi1_x - phi1);
+    d->GetObject("hdphiX1th",h2);
     h2->Fill(th1,  phi1_x - phi1);
-    d->GetObject("hdthX1phi",h2);
+    d->GetObject("hdphiX1phi",h2);
     h2->Fill(phi1,  phi1_x - phi1);
 
 
     //Diff p2 - p2_X.
     //pdep
     d->GetObject("hdppX2P",h2);
-    h2->Fill(sqrt(pdata_e[k][2]*pdata_e[k][2] + mpi*mpi), p2_x  - sqrt(pdata_e[k][2]*pdata_e[k][2] + mpi*mpi));
+    h2->Fill(sqrt(pdata_e[k][2]*pdata_e[k][2] - mpi*mpi), p2_x  - sqrt(pdata_e[k][2]*pdata_e[k][2] - mpi*mpi));
     d->GetObject("hdppX2th",h2);
-    h2->Fill(th2, p2_x  - sqrt(pdata_e[k][2]*pdata_e[k][2] + mpi*mpi));
+    h2->Fill(th2, p2_x  - sqrt(pdata_e[k][2]*pdata_e[k][2] - mpi*mpi));
     d->GetObject("hdppX2phi",h2);
-    h2->Fill(phi2, p2_x  - sqrt(pdata_e[k][2]*pdata_e[k][2] + mpi*mpi));
+    h2->Fill(phi2, p2_x  - sqrt(pdata_e[k][2]*pdata_e[k][2] - mpi*mpi));
 
     //Diff th2 - th2_X.
     //pdep
     d->GetObject("hdthX2P",h2);
-    h2->Fill(sqrt(pdata_e[k][2]*pdata_e[k][2] + mpi*mpi), th2_x - th2);
+    h2->Fill(sqrt(pdata_e[k][2]*pdata_e[k][2] - mpi*mpi), th2_x - th2);
     d->GetObject("hdthX2th",h2);
     h2->Fill(th2,  th2_x - th2);
     d->GetObject("hdthX2phi",h2);
     h2->Fill(phi2,  th2_x - th2);
 
-    //Diff th2 - th2_X.
+    //Diff phi2 - phi2_X.
     //pdep
-    d->GetObject("hdthX2P",h2);
-    h2->Fill(sqrt(pdata_e[k][2]*pdata_e[k][2] + mpi*mpi), phi2_x - phi2);
-    d->GetObject("hdthX2th",h2);
+    d->GetObject("hdphiX2P",h2);
+    h2->Fill(sqrt(pdata_e[k][2]*pdata_e[k][2] - mpi*mpi), phi2_x - phi2);
+    d->GetObject("hdphiX2th",h2);
     h2->Fill(th2,  phi2_x - phi2);
-    d->GetObject("hdthX2phi",h2);
+    d->GetObject("hdphiX2phi",h2);
     h2->Fill(phi2,  phi2_x - phi2);
 
     
